@@ -1,0 +1,262 @@
+// Web Auction Database Schema
+// Based on requirements in devlog/requiremnt.md
+
+// User roles: guest, bidder, seller, admin
+Enum user_role {
+  bidder
+  seller
+  admin
+}
+
+// User table - stores all user information
+Table users {
+  id uuid [pk, default: `gen_random_uuid()`]
+  email varchar(255) [unique, not null]
+  password_hash varchar(255) [not null]
+  full_name varchar(255) [not null]
+  address text
+  date_of_birth date
+  role user_role [default: 'bidder']
+  email_verified boolean [default: false]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    email
+    role
+  }
+}
+
+// OTP for email verification and password reset
+Table otp_codes {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id, not null]
+  code varchar(6) [not null]
+  purpose varchar(50) [not null] // 'email_verification', 'password_reset'
+  expires_at timestamp [not null]
+  used boolean [default: false]
+  created_at timestamp [default: `now()`]
+  
+  indexes {
+    (user_id, purpose)
+    expires_at
+  }
+}
+
+// Upgrade requests from bidder to seller
+Table upgrade_requests {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id, not null]
+  status varchar(20) [default: 'pending'] // 'pending', 'approved', 'rejected'
+  requested_at timestamp [default: `now()`]
+  reviewed_at timestamp
+  reviewed_by uuid [ref: > users.id]
+  notes text
+  
+  indexes {
+    user_id
+    status
+  }
+}
+
+// Categories - 2 levels (parent and child)
+Table categories {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(255) [not null]
+  parent_id uuid [ref: > categories.id]
+  created_at timestamp [default: `now()`]
+  
+  indexes {
+    parent_id
+    name
+  }
+}
+
+// Products/Items for auction
+Table products {
+  id uuid [pk, default: `gen_random_uuid()`]
+  seller_id uuid [ref: > users.id, not null]
+  category_id uuid [ref: > categories.id, not null]
+  name varchar(255) [not null]
+  description text [not null]
+  starting_price decimal(15,2) [not null]
+  current_price decimal(15,2) [not null]
+  buy_now_price decimal(15,2)
+  price_step decimal(15,2) [not null]
+  auto_extend boolean [default: false]
+  allow_unrated_bidders boolean [default: true]
+  start_time timestamp [default: `now()`]
+  end_time timestamp [not null]
+  status varchar(20) [default: 'active'] // 'active', 'ended', 'sold', 'cancelled'
+  winner_id uuid [ref: > users.id]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    seller_id
+    category_id
+    status
+    end_time
+    (status, end_time)
+    created_at
+  }
+}
+
+// Product images
+Table product_images {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id, not null]
+  image_url varchar(500) [not null]
+  is_primary boolean [default: false]
+  display_order int [default: 0]
+  created_at timestamp [default: `now()`]
+  
+  indexes {
+    product_id
+    (product_id, is_primary)
+  }
+}
+
+// Description history - for tracking description updates
+Table description_history {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id, not null]
+  description text [not null]
+  added_at timestamp [default: `now()`]
+  
+  indexes {
+    product_id
+    added_at
+  }
+}
+
+// Bids
+Table bids {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id, not null]
+  bidder_id uuid [ref: > users.id, not null]
+  bid_amount decimal(15,2) [not null]
+  max_bid_amount decimal(15,2) // For automatic bidding
+  is_auto_bid boolean [default: false]
+  bid_time timestamp [default: `now()`]
+  
+  indexes {
+    product_id
+    bidder_id
+    (product_id, bid_time)
+  }
+}
+
+// Blocked bidders - sellers can block specific bidders from their products
+Table blocked_bidders {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id, not null]
+  bidder_id uuid [ref: > users.id, not null]
+  blocked_by uuid [ref: > users.id, not null]
+  blocked_at timestamp [default: `now()`]
+  
+  indexes {
+    (product_id, bidder_id) [unique]
+    bidder_id
+  }
+}
+
+// Watchlist - products users are watching
+Table watchlist {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id, not null]
+  product_id uuid [ref: > products.id, not null]
+  added_at timestamp [default: `now()`]
+  
+  indexes {
+    (user_id, product_id) [unique]
+    user_id
+  }
+}
+
+// Questions and answers about products
+Table product_questions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id, not null]
+  asker_id uuid [ref: > users.id, not null]
+  question text [not null]
+  answer text
+  asked_at timestamp [default: `now()`]
+  answered_at timestamp
+  
+  indexes {
+    product_id
+    asker_id
+  }
+}
+
+// User ratings and reviews
+Table ratings {
+  id uuid [pk, default: `gen_random_uuid()`]
+  rated_user_id uuid [ref: > users.id, not null]
+  rater_user_id uuid [ref: > users.id, not null]
+  product_id uuid [ref: > products.id, not null]
+  rating int [not null] // +1 or -1
+  comment text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    rated_user_id
+    (rated_user_id, product_id, rater_user_id) [unique]
+  }
+}
+
+// Post-auction order completion process
+Enum order_status {
+  pending_payment
+  payment_confirmed
+  shipped
+  delivered
+  completed
+  cancelled
+}
+
+Table orders {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id, not null]
+  buyer_id uuid [ref: > users.id, not null]
+  seller_id uuid [ref: > users.id, not null]
+  final_price decimal(15,2) [not null]
+  status order_status [default: 'pending_payment']
+  payment_proof_url varchar(500)
+  shipping_address text
+  shipping_tracking_number varchar(100)
+  buyer_confirmed boolean [default: false]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    product_id [unique]
+    buyer_id
+    seller_id
+    status
+  }
+}
+
+// Chat messages for order completion
+Table order_messages {
+  id uuid [pk, default: `gen_random_uuid()`]
+  order_id uuid [ref: > orders.id, not null]
+  sender_id uuid [ref: > users.id, not null]
+  message text [not null]
+  sent_at timestamp [default: `now()`]
+  
+  indexes {
+    order_id
+    sent_at
+  }
+}
+
+// System configuration
+Table system_config {
+  key varchar(100) [pk]
+  value text [not null]
+  description text
+  updated_at timestamp [default: `now()`]
+}
