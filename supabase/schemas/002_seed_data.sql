@@ -3,21 +3,21 @@
 
 -- Insert admin user
 INSERT INTO users (email, password_hash, full_name, role, email_verified) VALUES
-  ('admin@webauction.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'Admin User', 'admin', true);
+  ('admin@webauction.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'Admin User', 'admin', true);
 
 -- Insert seller users
 INSERT INTO users (email, password_hash, full_name, address, role, email_verified) VALUES
-  ('seller1@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'John Seller', '123 Seller St, Ho Chi Minh City', 'seller', true),
-  ('seller2@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'Jane Merchant', '456 Commerce Ave, Hanoi', 'seller', true),
-  ('seller3@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'Mike Trader', '789 Trade Rd, Da Nang', 'seller', true);
+  ('seller1@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'John Seller', '123 Seller St, Ho Chi Minh City', 'seller', true),
+  ('seller2@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'Jane Merchant', '456 Commerce Ave, Hanoi', 'seller', true),
+  ('seller3@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'Mike Trader', '789 Trade Rd, Da Nang', 'seller', true);
 
 -- Insert bidder users
 INSERT INTO users (email, password_hash, full_name, address, role, email_verified) VALUES
-  ('bidder1@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'Alice Buyer', '321 Buyer Blvd, Ho Chi Minh City', 'bidder', true),
-  ('bidder2@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'Bob Customer', '654 Customer Ln, Hanoi', 'bidder', true),
-  ('bidder3@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'Carol Shopper', '987 Shopping Dr, Can Tho', 'bidder', true),
-  ('bidder4@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'David Purchaser', '147 Purchase Pkwy, Hue', 'bidder', true),
-  ('bidder5@example.com', '$2b$10$rQZ8J9qZ4JGxZ8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8', 'Eva Auction', '258 Auction Way, Nha Trang', 'bidder', true);
+  ('bidder1@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'Alice Buyer', '321 Buyer Blvd, Ho Chi Minh City', 'bidder', true),
+  ('bidder2@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'Bob Customer', '654 Customer Ln, Hanoi', 'bidder', true),
+  ('bidder3@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'Carol Shopper', '987 Shopping Dr, Can Tho', 'bidder', true),
+  ('bidder4@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'David Purchaser', '147 Purchase Pkwy, Hue', 'bidder', true),
+  ('bidder5@example.com', '$2b$10$hWe0WmjN2X8QwxdFC0BRO.Hlsaoi8dMec/he8e5AOM.s7ICCeIrBq', 'Eva Auction', '258 Auction Way, Nha Trang', 'bidder', true);
 
 -- Insert parent categories
 INSERT INTO categories (id, name, parent_id) VALUES
